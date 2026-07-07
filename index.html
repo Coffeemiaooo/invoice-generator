@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jing Yee's Interactive Invoice Generator</title>
+    <title>Invoice Generator</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & Babel for Browser Rendering -->
@@ -33,18 +33,18 @@
             // State (Locked to Jing Yee's latest status)
             const [logo, setLogo] = useState(null);
             const [senderName, setSenderName] = useState('Chong Jing Yee');
-            const [senderContact, setSenderContact] = useState('jingyee@email.com | +6012-3456789');
+            const [senderContact, setSenderContact] = useState('rainchong03@email.com | +6014-3486463');
             
             const [invoiceNo, setInvoiceNo] = useState('INV-2026-001');
             const [invoiceDate, setInvoiceDate] = useState('2026-07-07');
             const [paymentTerms, setPaymentTerms] = useState('Due Upon Receipt (Within 7 Days)');
             
             const [clientName, setClientName] = useState('Shiftix Sdn Bhd');
-            const [clientAddress, setClientAddress] = useState('No. 12, Jalan Sultan Ismail, 50250 Kuala Lumpur, Malaysia');
-            const [clientTin, setClientTin] = useState('C1234567890');
+            const [clientAddress, setClientAddress] = useState('4, Jalan Permata 1A/KS9, Pusat Perniagaan Bestari, 42000 Klang, Selangor');
+            const [clientTin, setClientTin] = useState('202301019899');
             
             const [items, setItems] = useState([
-                { id: 1, description: 'Freelance Marketing & Advertisement Services\n- Ad Campaign Setup & Optimization for Shiftix Project', qty: 1, unitPrice: 500 }
+                { id: 1, description: 'Google Paid Ads\n- Ad Campaign Setup & Optimization for Shiftix Project', qty: 1, unitPrice: 500 }
             ]);
             
             const [bankName, setBankName] = useState('Public Bank');
@@ -102,7 +102,7 @@
                         <div className="flex items-center space-x-3">
                             <div className="bg-blue-600 p-2.5 rounded-lg text-white font-extrabold text-xs tracking-wider">JY</div>
                             <div>
-                                <h1 className="text-sm font-bold text-slate-100 tracking-tight">Rain's Invoice Generator</h1>
+                                <h1 className="text-sm font-bold text-slate-100 tracking-tight">Invoice Generator</h1>
                                 <p className="text-[10px] text-slate-400">Professional Freelancer Accounting Tool</p>
                             </div>
                         </div>
@@ -369,7 +369,7 @@
                                 </div>
 
                                 <div className="border-t border-slate-100 pt-3 text-center text-[9px] text-slate-400">
-                                    Thank you for your business. Generated via Jing Yee's Generator.
+                                    Thank you for your business. Generated via Rain's Generator.
                                 </div>
                             </div>
                         </main>
