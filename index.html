@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jing Yee's Interactive Invoice Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & Babel for Browser Rendering -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @media print {
+            body { background: white !important; color: black !important; }
+            aside, header, .no-print { display: none !important; }
+            main { padding: 0 !important; margin: 0 !important; background: transparent !important; overflow: visible !important; }
+            @page { size: A4; margin: 15mm 12mm; }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function App() {
+            // State (Locked to Jing Yee's latest status)
+            const [logo, setLogo] = useState(null);
+            const [senderName, setSenderName] = useState('Chong Jing Yee');
+            const [senderContact, setSenderContact] = useState('jingyee@email.com | +6012-3456789');
+            
+            const [invoiceNo, setInvoiceNo] = useState('INV-2026-001');
+            const [invoiceDate, setInvoiceDate] = useState('2026-07-07');
+            const [paymentTerms, setPaymentTerms] = useState('Due Upon Receipt (Within 7 Days)');
+            
+            const [clientName, setClientName] = useState('Shiftix Sdn Bhd');
+            const [clientAddress, setClientAddress] = useState('No. 12, Jalan Sultan Ismail, 50250 Kuala Lumpur, Malaysia');
+            const [clientTin, setClientTin] = useState('C1234567890');
+            
+            const [items, setItems] = useState([
+                { id: 1, description: 'Freelance Marketing & Advertisement Services\n- Ad Campaign Setup & Optimization for Shiftix Project', qty: 1, unitPrice: 500 }
+            ]);
+            
+            const [bankName, setBankName] = useState('Public Bank');
+            const [bankAccName, setBankAccName] = useState('Chong Jing Yee');
+            const [bankAccNo, setBankAccNo] = useState('4571382026');
+            
+            const [currency, setCurrency] = useState('MYR');
+            const [taxRate, setTaxRate] = useState(0);
+
+            const handleLogoUpload = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => setLogo(reader.result);
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const handleAddItem = () => {
+                setItems([...items, { id: Date.now(), description: 'New Service Item', qty: 1, unitPrice: 0 }]);
+            };
+
+            const handleUpdateItem = (id, field, value) => {
+                setItems(items.map(item => item.id === id ? { ...item, [field]: value } : item));
+            };
+
+            const handleDeleteItem = (id) => {
+                if (items.length > 1) setItems(items.filter(item => item.id !== id));
+            };
+
+            const subtotal = items.reduce((sum, item) => sum + (item.qty * item.unitPrice), 0);
+            const taxAmount = (subtotal * taxRate) / 100;
+            const totalPayable = subtotal + taxAmount;
+
+            const loadShiftixPreset = () => {
+                setClientName('Shiftix Sdn Bhd');
+                setClientAddress('No. 12, Jalan Sultan Ismail, 50250 Kuala Lumpur, Malaysia');
+                setClientTin('C1234567890');
+                setItems([{ id: 1, description: 'Freelance Marketing & Advertisement Services\n- Ad Campaign Setup & Optimization for Shiftix Project', qty: 1, unitPrice: 500 }]);
+                setInvoiceNo('INV-2026-001');
+                setInvoiceDate('2026-07-07');
+                setPaymentTerms('Due Upon Receipt (Within 7 Days)');
+            };
+
+            const clearForm = () => {
+                setClientName('');
+                setClientAddress('');
+                setClientTin('');
+                setItems([{ id: Date.now(), description: '', qty: 1, unitPrice: 0 }]);
+            };
+
+            return (
+                <div className="flex flex-col min-h-screen">
+                    <header className="bg-slate-950 border-b border-slate-800 py-4 px-6 flex justify-between items-center no-print sticky top-0 z-50">
+                        <div className="flex items-center space-x-3">
+                            <div className="bg-blue-600 p-2.5 rounded-lg text-white font-extrabold text-xs tracking-wider">JY</div>
+                            <div>
+                                <h1 className="text-sm font-bold text-slate-100 tracking-tight">Jing Yee's Invoice Generator</h1>
+                                <p className="text-[10px] text-slate-400">Professional Freelancer Accounting Tool</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                            <button onClick={loadShiftixPreset} className="flex items-center space-x-1 bg-indigo-950 hover:bg-indigo-900 text-indigo-200 px-3 py-2 rounded-lg text-xs border border-indigo-800 font-medium transition-all">
+                                <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                <span>Load Shiftix Preset</span>
+                            </button>
+                            <button onClick={() => window.print()} className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-semibold shadow-md shadow-emerald-950/20 transition-all">
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3a2 2 0 002 2zm5-17V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v3" />
+                                </svg>
+                                <span>Print or Save PDF</span>
+                            </button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex flex-col lg:flex-row print:block">
+                        {}
+                        <aside className="w-full lg:w-[38%] bg-slate-950 p-6 space-y-5 overflow-y-auto max-h-[calc(100vh-65px)] border-r border-slate-800 no-print">
+                            
+                            {/* Panel 1: My Info */}
+                            <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+                                <div className="flex items-center space-x-2 border-b border-slate-800 pb-2">
+                                    <span className="text-blue-500 text-xs font-extrabold uppercase">1.</span>
+                                    <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">My Info (Sender)</h2>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-[10px] text-slate-400 mb-0.5">My Name</label>
+                                        <input type="text" value={senderName} onChange={(e) => setSenderName(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition-all" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-slate-400 mb-0.5">Contact Details</label>
+                                        <input type="text" value={senderContact} onChange={(e) => setSenderContact(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition-all" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] text-slate-400 mb-1">My Custom Logo</label>
+                                    <div className="flex items-center space-x-2">
+                                        <label className="cursor-pointer bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 px-3 py-1.5 rounded text-[11px] font-semibold transition-all">
+                                            <span>Upload Logo</span>
+                                            <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                                        </label>
+                                        {logo && (
+                                            <button onClick={() => setLogo(null)} className="text-red-500 hover:text-red-400 text-[10px] font-medium">Remove</button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Panel 2: Client Details */}
+                            <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+                                <div className="flex items-center space-x-2 border-b border-slate-800 pb-2">
+                                    <span className="text-blue-500 text-xs font-extrabold uppercase">2.</span>
+                                    <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">Client & Invoice Setup</h2>
+                                </div>
+                                <div className="grid grid-cols-3 gap-2">
+                                    <div>
+                                        <label className="block text-[10px] text-slate-400">Invoice No</label>
+                                        <input type="text" value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-slate-400">Invoice Date</label>
+                                        <input type="date" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs text-white" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-slate-400">Terms</label>
+                                        <input type="text" value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2.5 pt-2 border-t border-slate-800">
+                                    <div className="flex justify-between items-center">
+                                        <label className="block text-[10px] text-slate-400 font-bold uppercase">Client Details</label>
+                                        <button onClick={clearForm} className="text-red-400 hover:text-red-300 text-[10px]">Clear</button>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-slate-400">Company Name</label>
+                                        <input type="text" value={clientName} onChange={(e) => setClientName(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-slate-400">Reg No / TIN</label>
+                                        <input type="text" value={clientTin} onChange={(e) => setClientTin(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-slate-400">Billing Address</label>
+                                        <textarea value={clientAddress} onChange={(e) => setClientAddress(e.target.value)} rows="2" className="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs resize-none" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Panel 3: Services */}
+                            <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+                                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                                    <div className="flex items-center space-x-2">
+                                        <span className="text-blue-500 text-xs font-extrabold">3.</span>
+                                        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">Services Details</h2>
+                                    </div>
+                                    <button onClick={handleAddItem} className="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded transition-all">+ Add Service</button>
+                                </div>
+                                <div className="space-y-3">
+                                    {items.map((item, index) => (
+                                        <div key={item.id} className="bg-slate-950 p-2.5 rounded border border-slate-800 space-y-1.5 relative">
+                                            <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold">
+                                                <span>Item #{index + 1}</span>
+                                                {items.length > 1 && <button onClick={() => handleDeleteItem(item.id)} className="text-red-500 hover:text-red-400">Delete</button>}
+                                            </div>
+                                            <textarea value={item.description} onChange={(e) => handleUpdateItem(item.id, 'description', e.target.value)} rows="2" className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs resize-none text-slate-200" />
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label className="block text-[9px] text-slate-500">Qty</label>
+                                                    <input type="number" value={item.qty} onChange={(e) => handleUpdateItem(item.id, 'qty', parseInt(e.target.value) || 1)} className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs" />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-[9px] text-slate-500">Unit Price</label>
+                                                    <input type="number" step="0.01" value={item.unitPrice} onChange={(e) => handleUpdateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)} className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800">
+                                    <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs text-white">
+                                        <option value="MYR">MYR (RM)</option>
+                                        <option value="USD">USD ($)</option>
+                                        <option value="SGD">SGD (S$)</option>
+                                    </select>
+                                    <select value={taxRate} onChange={(e) => setTaxRate(parseInt(e.target.value))} className="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs text-white">
+                                        <option value={0}>0% Tax (Exempted)</option>
+                                        <option value={6}>6% SST</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Panel 4: My Bank */}
+                            <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+                                <div className="flex items-center space-x-2 border-b border-slate-800 pb-2">
+                                    <span className="text-blue-500 text-xs font-extrabold uppercase">4.</span>
+                                    <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">Bank Transfer Details</h2>
+                                </div>
+                                <div className="space-y-2">
+                                    <div>
+                                        <label className="block text-[10px] text-slate-400">Bank Name</label>
+                                        <input type="text" value={bankName} onChange={(e) => setBankName(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-slate-400">Account Holder Name</label>
+                                        <input type="text" value={bankAccName} onChange={(e) => setBankAccName(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-slate-400">Account Number</label>
+                                        <input type="text" value={bankAccNo} onChange={(e) => setBankAccNo(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs font-mono" />
+                                    </div>
+                                </div>
+                            </div>
+                        </aside>
+
+                        {}
+                        <main className="flex-1 bg-slate-800 overflow-y-auto p-4 lg:p-12 flex justify-center print:p-0 print:bg-white print:overflow-visible">
+                            <div className="bg-white text-black w-full max-w-[210mm] min-h-[297mm] p-[15mm] shadow-2xl rounded-sm print:shadow-none print:p-0 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex justify-between items-start border-b-2 border-slate-900 pb-5 mb-6">
+                                        <div>
+                                            {logo ? (
+                                                <img src={logo} className="max-h-14 max-w-40 object-contain mb-2" />
+                                            ) : (
+                                                <div className="text-slate-400 text-[10px] italic border border-dashed border-slate-300 p-2 mb-2 inline-block no-print rounded">
+                                                    [ Place Logo Here ]
+                                                </div>
+                                            )}
+                                            <div className="font-extrabold text-base text-slate-900 tracking-tight">{senderName}</div>
+                                            <div className="text-[11px] text-slate-600 mt-1 space-y-0.5">
+                                                <div>Contact: {senderContact}</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Invoice</h1>
+                                            <div className="text-[11px] text-slate-600 mt-3 space-y-0.5">
+                                                <div>No: <span className="font-bold text-slate-900 font-mono">{invoiceNo}</span></div>
+                                                <div>Date: {invoiceDate}</div>
+                                                <div>Terms: {paymentTerms}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-slate-50 border border-slate-200 p-3.5 rounded mb-6 grid grid-cols-2 gap-3">
+                                        <div>
+                                            <div className="text-[9px] uppercase font-bold text-slate-400 mb-0.5">Bill To (Client):</div>
+                                            <div className="font-bold text-slate-900 text-sm">{clientName || '---'}</div>
+                                            <div className="text-[11px] text-slate-600 mt-1 whitespace-pre-line leading-relaxed">{clientAddress}</div>
+                                            {clientTin && <div className="text-[10px] text-slate-500 mt-1">Reg/TIN: {clientTin}</div>}
+                                        </div>
+                                        <div className="text-right flex flex-col justify-end border-l border-slate-200 pl-3">
+                                            <div className="text-[9px] uppercase font-bold text-slate-400">Category:</div>
+                                            <div className="text-[11px] font-bold text-slate-800 mt-0.5">Freelance Services</div>
+                                            <div className="text-[9px] uppercase font-bold text-slate-400 mt-2">SST Treatment:</div>
+                                            <div className="text-[10px] text-slate-500 mt-0.5 italic">Exempted / Not Registered</div>
+                                        </div>
+                                    </div>
+
+                                    <table className="w-full text-left text-xs mb-6">
+                                        <thead>
+                                            <tr className="bg-slate-900 text-white font-bold">
+                                                <th className="p-2.5 text-center w-10">No.</th>
+                                                <th className="p-2.5">Description</th>
+                                                <th className="p-2.5 text-center w-12">Qty</th>
+                                                <th className="p-2.5 text-right w-24">Unit Price</th>
+                                                <th className="p-2.5 text-right w-28">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100 text-[11px]">
+                                            {items.map((item, index) => (
+                                                <tr key={item.id} className="hover:bg-slate-50/50">
+                                                    <td className="p-2.5 text-center text-slate-400">{index + 1}</td>
+                                                    <td className="p-2.5 text-slate-800 whitespace-pre-line leading-relaxed">{item.description}</td>
+                                                    <td className="p-2.5 text-center">{item.qty}</td>
+                                                    <td className="p-2.5 text-right font-mono">{item.unitPrice.toFixed(2)}</td>
+                                                    <td className="p-2.5 text-right font-bold text-slate-950 font-mono">{(item.qty * item.unitPrice).toFixed(2)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+
+                                    <div className="flex justify-end mb-6">
+                                        <table className="w-64 text-xs">
+                                            <tbody>
+                                                <tr className="border-b border-slate-100">
+                                                    <td className="py-1.5 text-slate-500">Subtotal:</td>
+                                                    <td className="py-1.5 text-right font-mono font-medium">{currency} {subtotal.toFixed(2)}</td>
+                                                </tr>
+                                                {taxAmount > 0 && (
+                                                    <tr className="border-b border-slate-100">
+                                                        <td className="py-1.5 text-slate-500">SST ({taxRate}%):</td>
+                                                        <td className="py-1.5 text-right font-mono font-medium">{currency} {taxAmount.toFixed(2)}</td>
+                                                    </tr>
+                                                )}
+                                                <tr className="bg-slate-100 font-bold text-sm">
+                                                    <td className="p-2 text-slate-900">TOTAL:</td>
+                                                    <td className="p-2 text-right font-mono text-slate-950">{currency} {totalPayable.toFixed(2)}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div className="bg-slate-50 border-l-4 border-slate-900 p-3 rounded">
+                                        <div className="text-[9px] uppercase font-bold text-slate-400 mb-1.5">Bank Payment:</div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+                                            <div>
+                                                <span className="text-slate-500 block text-[9px] uppercase">Bank</span>
+                                                <span className="font-bold text-slate-900">{bankName}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-slate-500 block text-[9px] uppercase">A/C Name</span>
+                                                <span className="font-bold text-slate-900">{bankAccName}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-slate-500 block text-[9px] uppercase">A/C No</span>
+                                                <span className="font-bold text-slate-900 font-mono">{bankAccNo}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="border-t border-slate-100 pt-3 text-center text-[9px] text-slate-400">
+                                    Thank you for your business. Generated via Jing Yee's Generator.
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
