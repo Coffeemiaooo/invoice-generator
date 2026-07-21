@@ -19,7 +19,7 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body {
             font-family: 'Inter', sans-serif;
         }
@@ -127,7 +127,7 @@
             const [senderName, setSenderName] = useState(() => localStorage.getItem('jy_senderName') || 'Chong Jing Yee');
             const [senderContact, setSenderContact] = useState(() => localStorage.getItem('jy_senderContact') || 'rainchong03@gmail.com | +6014-3486463');
             
-            const [invoiceNo, setInvoiceNo] = useState('INV-2026-002');
+            const [invoiceNo, setInvoiceNo] = useState('INV-2026-004');
             const [invoiceDate, setInvoiceDate] = useState('2026-07-21');
             const [paymentTerms, setPaymentTerms] = useState('Due Upon Receipt (Within 7 Days)');
             
@@ -204,7 +204,7 @@
                 setClientAddress('53, Jalan Bestari 2B, Bandar Bestari, 41200 Klang, Selangor');
                 setClientTin('202301019899');
                 setItems([{ id: 1, description: 'Google Paid Ads\n- Ad Campaign Setup & Optimization for Shiftix Project', qty: 1, unitPrice: 500 }]);
-                setInvoiceNo('INV-2026-002');
+                setInvoiceNo('INV-2026-004');
                 setInvoiceDate('2026-07-21');
                 setPaymentTerms('Due Upon Receipt (Within 7 Days)');
             };
@@ -464,8 +464,8 @@
                                                             <td className="p-2.5 text-center text-slate-400">{index + 1}</td>
                                                             <td className="p-2.5 text-slate-800 whitespace-pre-line leading-relaxed font-normal">{item.description}</td>
                                                             <td className="p-2.5 text-center">{item.qty}</td>
-                                                            <td className="p-2.5 text-right font-mono">{item.unitPrice.toFixed(2)}</td>
-                                                            <td className="p-2.5 text-right font-bold text-slate-950 font-mono">{(item.qty * item.unitPrice).toFixed(2)}</td>
+                                                            <td className="p-2.5 text-right font-mono">{item.unitPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                            <td className="p-2.5 text-right font-bold text-slate-950 font-mono">{(item.qty * item.unitPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
@@ -478,17 +478,17 @@
                                                 <tbody>
                                                     <tr className="border-b border-slate-100">
                                                         <td className="py-1.5 text-slate-500">Subtotal:</td>
-                                                        <td className="py-1.5 text-right font-mono font-medium">{currency} {subtotal.toFixed(2)}</td>
+                                                        <td className="py-1.5 text-right font-mono font-medium">{currency} {subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                                     </tr>
                                                     {taxAmount > 0 && (
                                                         <tr className="border-b border-slate-100">
                                                             <td className="py-1.5 text-slate-500">SST ({taxRate}%):</td>
-                                                            <td className="py-1.5 text-right font-mono font-medium">{currency} {taxAmount.toFixed(2)}</td>
+                                                            <td className="py-1.5 text-right font-mono font-medium">{currency} {taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                                         </tr>
                                                     )}
                                                     <tr className="bg-slate-100 font-bold text-xs sm:text-sm print:text-sm">
                                                         <td className="p-2 text-slate-900">TOTAL:</td>
-                                                        <td className="p-2 text-right font-mono text-slate-950">{currency} {totalPayable.toFixed(2)}</td>
+                                                        <td className="p-2 text-right font-mono text-slate-950">{currency} {totalPayable.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
