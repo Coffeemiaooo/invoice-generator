@@ -119,12 +119,12 @@
             const [senderName, setSenderName] = useState(() => localStorage.getItem('jy_senderName') || 'Chong Jing Yee');
             const [senderContact, setSenderContact] = useState(() => localStorage.getItem('jy_senderContact') || 'rainchong03@gmail.com | +6014-3486463');
             
-            const [invoiceNo, setInvoiceNo] = useState('INV-2026-001');
-            const [invoiceDate, setInvoiceDate] = useState('2026-07-07');
+            const [invoiceNo, setInvoiceNo] = useState('INV-2026-002');
+            const [invoiceDate, setInvoiceDate] = useState('2026-07-21');
             const [paymentTerms, setPaymentTerms] = useState('Due Upon Receipt (Within 7 Days)');
             
             const [clientName, setClientName] = useState('Shiftix Sdn Bhd');
-            const [clientAddress, setClientAddress] = useState('4, Jalan Permata 1A/KS9, Pusat Perniagaan Bestari, 42000 Klang, Selangor');
+            const [clientAddress, setClientAddress] = useState('53, Jalan Bestari 2B, Bandar Bestari, 41200 Klang, Selangor.');
             const [clientTin, setClientTin] = useState('202301019899');
             
             const [items, setItems] = useState([
@@ -193,11 +193,11 @@
 
             const loadShiftixPreset = () => {
                 setClientName('Shiftix Sdn Bhd');
-                setClientAddress('4, Jalan Permata 1A/KS9, Pusat Perniagaan Bestari, 42000 Klang, Selangor');
+                setClientAddress('53, Jalan Bestari 2B, Bandar Bestari, 41200 Klang, Selangor');
                 setClientTin('202301019899');
                 setItems([{ id: 1, description: 'Google Paid Ads\n- Ad Campaign Setup & Optimization for Shiftix Project', qty: 1, unitPrice: 500 }]);
-                setInvoiceNo('INV-2026-001');
-                setInvoiceDate('2026-07-07');
+                setInvoiceNo('INV-2026-002');
+                setInvoiceDate('2026-07-21');
                 setPaymentTerms('Due Upon Receipt (Within 7 Days)');
             };
 
